@@ -9,6 +9,10 @@
 import Foundation
 import UIKit
 
+protocol CurveViewDelegate: class {
+    func valueChanged(pointIndex: Int, value: CGPoint)
+}
+
 class CurveView: UIView {
 
     var points: [CGPoint] = [CGPoint(x: 0, y: 0),
@@ -33,16 +37,24 @@ class CurveView: UIView {
         }
     }
 
+    weak var delegate: CurveViewDelegate?
+
+    var currentItem: (offset: Int, element: CGPoint)?
+    var currentItemStartY: CGFloat?
+    var panStartY: CGFloat?
+    var shouldVibrate = false
+
     init() {
         super.init(frame: .zero)
-
+        clipsToBounds = false
+        layer.masksToBounds = false
         backgroundColor = .white
+        let gestureRecog = UIPanGestureRecognizer(target: self, action: #selector(handlePan(_:)))
+        addGestureRecognizer(gestureRecog)
     }
 
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
-        clipsToBounds = false
-        layer.masksToBounds = false
     }
 
     func setup(with item: CurveViewModel) {
@@ -97,6 +109,75 @@ class CurveView: UIView {
         lineColor.set()
         circlePath.stroke()
         circlePath.fill()
+    }
+
+}
+
+// MARK: Tap Handling 
+
+extension CurveView {
+
+    func handlePan(_ sender: UIPanGestureRecognizer) {
+        switch sender.state {
+        case .began: handleBegan(sender)
+        case .changed: handleChanged(sender)
+        case .ended, .cancelled: handleEnded(sender)
+        default: return
+        }
+    }
+
+    private func handleChanged(_ sender: UIPanGestureRecognizer) {
+        guard let currentItem = currentItem,
+            let panStartY = panStartY,
+            let currentItemStartY = currentItemStartY else { return }
+
+        let newPosition = sender.location(in: self)
+        let newScaledY = 1 - (newPosition.y / frame.height)
+
+        let movedAmmount = newScaledY - panStartY
+        var movedPosition = currentItemStartY + movedAmmount
+
+        if movedPosition < 0 {
+            movedPosition = 0
+        } else if movedPosition > 1 {
+            movedPosition = 1
+        }
+
+        if (movedPosition == 1 || movedPosition == 0) && shouldVibrate {
+            shouldVibrate = false
+            HapticManager.selectionChanged()
+        }
+
+        if (movedPosition > 0.05 && movedPosition < 0.95) || (movedPosition < 0.95 && movedPosition > 0.05) {
+            shouldVibrate = true
+        }
+
+//        let segIndex = segmenetedControl.selectedSegmentIndex
+        let pointIndex = currentItem.offset
+        points[pointIndex] = CGPoint(x: currentItem.element.x, y: movedPosition)
+//        items[segIndex].points[pointIndex] = CGPoint(x: currentItem.element.x, y: movedPosition)
+
+        delegate?.valueChanged(pointIndex: pointIndex, value: points[pointIndex])
+    }
+
+    private func handleBegan(_ sender: UIPanGestureRecognizer) {
+
+        let position = sender.location(in: self)
+        let scaledX = position.x / frame.width
+        let scaledY = 1 - (position.y / frame.height)
+
+        currentItem = points
+            .enumerated()
+            .max(by: { abs(scaledX - $0.element.x) > abs(scaledX - $1.element.x) }) // closest point to touch by 'x'
+        panStartY = scaledY
+        guard let currentItem = currentItem else { return }
+        currentItemStartY = points[currentItem.offset].y
+    }
+
+    private func handleEnded(_ sender: UIPanGestureRecognizer) {
+        currentItem = nil
+        panStartY = nil
+        currentItemStartY = nil
     }
 
 }

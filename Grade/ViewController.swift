@@ -70,6 +70,8 @@ class ViewController: UIViewController {
         segmenetedControl.selectedSegmentIndex = 0
         segmenetedControl.tintColor = .black
 
+        curveView.delegate = self
+
         view.backgroundColor = .white
         view.addSubview(label)
         view.addSubview(segmenetedControl)
@@ -99,83 +101,12 @@ class ViewController: UIViewController {
         label.autoPinEdge(.top, to: .top, of: imageView)
         label.autoPinEdge(.bottom, to: .bottom, of: imageView)
 
-        let gestureRecog = UIPanGestureRecognizer(target: self, action: #selector(handlePan(_:)))
-        curveView.addGestureRecognizer(gestureRecog)
-
         let tapGestureRecog = UITapGestureRecognizer(target: self, action: #selector(imagePressed))
         imageView.addGestureRecognizer(tapGestureRecog)
 
     }
 
-    var currentItem: (offset: Int, element: CGPoint)?
-    var currentItemStartY: CGFloat?
-    var panStartY: CGFloat?
-    var shouldVibrate = false
-
-    func handlePan(_ sender: UIPanGestureRecognizer) {
-        switch sender.state {
-        case .began: handleBegan(sender)
-        case .changed: handleChanged(sender)
-        case .ended, .cancelled: handleEnded(sender)
-        default: return
-        }
-    }
-
-    private func handleChanged(_ sender: UIPanGestureRecognizer) {
-        guard let currentItem = currentItem,
-            let panStartY = panStartY,
-            let currentItemStartY = currentItemStartY else { return }
-
-        let newPosition = sender.location(in: curveView)
-        let newScaledY = 1 - (newPosition.y / curveView.frame.height)
-
-        let movedAmmount = newScaledY - panStartY
-        var movedPosition = currentItemStartY + movedAmmount
-
-        if movedPosition < 0 {
-            movedPosition = 0
-        } else if movedPosition > 1 {
-            movedPosition = 1
-        }
-
-        if (movedPosition == 1 || movedPosition == 0) && shouldVibrate {
-            shouldVibrate = false
-            HapticManager.selectionChanged()
-        }
-
-        if (movedPosition > 0.05 && movedPosition < 0.95) || (movedPosition < 0.95 && movedPosition > 0.05) {
-            shouldVibrate = true
-        }
-
-        let segIndex = segmenetedControl.selectedSegmentIndex
-        let pointIndex = currentItem.offset
-        curveView.points[pointIndex] = CGPoint(x: currentItem.element.x, y: movedPosition)
-        items[segIndex].points[pointIndex] = CGPoint(x: currentItem.element.x, y: movedPosition)
-
-        filterImage()
-    }
-
-    private func handleBegan(_ sender: UIPanGestureRecognizer) {
-
-        let position = sender.location(in: curveView)
-        let scaledX = position.x / curveView.frame.width
-        let scaledY = 1 - (position.y / curveView.frame.height)
-
-        currentItem = curveView.points
-            .enumerated()
-            .max(by: { abs(scaledX - $0.element.x) > abs(scaledX - $1.element.x) }) // closest point to touch by 'x'
-        panStartY = scaledY
-        guard let currentItem = currentItem else { return }
-        currentItemStartY = curveView.points[currentItem.offset].y
-    }
-
-    private func handleEnded(_ sender: UIPanGestureRecognizer) {
-        currentItem = nil
-        panStartY = nil
-        currentItemStartY = nil
-    }
-
-    private func filterImage() {
+    fileprivate func filterImage() {
         rgbFilter.rgbCompositeControlPoints = items[0].points.map({ NSValue(cgPoint: $0) })
         rgbFilter.redControlPoints = items[1].points.map({ NSValue(cgPoint: $0) })
         rgbFilter.greenControlPoints = items[2].points.map({ NSValue(cgPoint: $0) })
@@ -196,7 +127,6 @@ class ViewController: UIViewController {
     func savePressed() {
         guard let currentImage = currentImage,
             let filteredImage = rgbFilter.image(byFilteringImage: currentImage) else { return }
-        //        UIImageWriteToSavedPhotosAlbum(filteredImage, self, #selector(saveComplete), nil)
         PHPhotoLibrary.shared().performChanges({
             PHAssetCreationRequest.creationRequestForAsset(from: filteredImage)
         }) { [weak self] (success, error) in
@@ -232,6 +162,16 @@ extension ViewController: UIImagePickerControllerDelegate, UINavigationControlle
         sourceImage.addTarget(rgbFilter)
         rgbFilter.addTarget(imageView)
         sourceImage.processImage()
+    }
+
+}
+
+extension ViewController: CurveViewDelegate {
+
+    func valueChanged(pointIndex: Int, value: CGPoint) {
+        let segIndex = segmenetedControl.selectedSegmentIndex
+        items[segIndex].points[pointIndex] = value
+        filterImage()
     }
 
 }
