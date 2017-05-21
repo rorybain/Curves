@@ -1,0 +1,18 @@
+PODS:
+  - GPUImage (0.1.7)
+  - PureLayout (3.0.2)
+  - SwiftLint (0.18.1)
+
+DEPENDENCIES:
+  - GPUImage
+  - PureLayout
+  - SwiftLint
+
+SPEC CHECKSUMS:
+  GPUImage: 733a5f0fab92df9de1c37ba9df520a833ccb406d
+  PureLayout: 4d550abe49a94f24c2808b9b95db9131685fe4cd
+  SwiftLint: b467d08f5b25dc3b3cfed243d8e1b74b91714c67
+
+PODFILE CHECKSUM: 7c2fc2a93665a9d6465f92bd8c7cb5485a9d4a4a
+
+COCOAPODS: 1.2.1
