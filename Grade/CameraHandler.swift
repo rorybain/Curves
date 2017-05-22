@@ -23,35 +23,14 @@ class CameraHandler: NSObject {
     private let frontCamera = UIImagePickerControllerCameraDevice.front
 
     weak var delegate: (UINavigationControllerDelegate & UIImagePickerControllerDelegate)?
+
     init(delegate: UINavigationControllerDelegate & UIImagePickerControllerDelegate) {
         self.delegate = delegate
     }
 
     func getPhotoLibraryOn(_ onVC: UIViewController, canEdit: Bool) {
-
-        if !isPhotoLibraryAvailable && !isSavedPhotoAlbumAvailable { return }
-        let type = kUTTypeImage as String
-
-        if isPhotoLibraryAvailable {
-            imagePicker.sourceType = .photoLibrary
-            if let availableTypes = UIImagePickerController.availableMediaTypes(for: .photoLibrary) {
-                if availableTypes.contains(type) {
-                    imagePicker.mediaTypes = [type]
-                    imagePicker.allowsEditing = canEdit
-                }
-            }
-        } else if isPhotoLibraryAvailable {
-            imagePicker.sourceType = .savedPhotosAlbum
-            if let availableTypes = UIImagePickerController.availableMediaTypes(for: .savedPhotosAlbum) {
-                if availableTypes.contains(type) {
-                    imagePicker.mediaTypes = [type]
-                }
-            }
-        } else {
-            return
-        }
-
         imagePicker.allowsEditing = canEdit
+        imagePicker.mediaTypes = UIImagePickerController.availableMediaTypes(for: .photoLibrary) ?? []
         imagePicker.delegate = delegate
         onVC.present(imagePicker, animated: true, completion: nil)
     }

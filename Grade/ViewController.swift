@@ -140,16 +140,17 @@ class ViewController: UIViewController {
         }
     }
 
-    func saveComplete() { }
 }
 
 extension ViewController: UIImagePickerControllerDelegate, UINavigationControllerDelegate {
 
     func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [String : Any]) {
+        if let x = info[UIImagePickerControllerMediaURL] as? URL {
+            print(x)
+        }
+
         if let image = info[UIImagePickerControllerOriginalImage] as? UIImage {
             set(image)
-        } else {
-            print("Unable to get image")
         }
         picker.dismiss(animated: true, completion: nil)
     }

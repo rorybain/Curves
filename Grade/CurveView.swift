@@ -37,6 +37,12 @@ class CurveView: UIView {
         }
     }
 
+    private var viewInset: CGFloat = 20 {
+        didSet {
+            setNeedsDisplay()
+        }
+    }
+
     weak var delegate: CurveViewDelegate?
 
     var currentItem: (offset: Int, element: CGPoint)?
@@ -65,9 +71,11 @@ class CurveView: UIView {
     override func draw(_ rect: CGRect) {
         super.draw(rect)
 
-        drawBaseLine(rect)
+        let insetRect = rect.insetBy(dx: viewInset, dy: viewInset)
 
-        let scaledPoints = CurveView.scale(points, toRect: rect)
+        drawBaseLine(insetRect)
+
+        let scaledPoints = CurveView.scale(points, toRect: insetRect)
         let path = UIBezierPath(hermiteInterpolatedPoints: scaledPoints, closed: false)
         lineColor.setStroke()
         path?.lineWidth = 3
@@ -113,7 +121,7 @@ class CurveView: UIView {
 
 }
 
-// MARK: Tap Handling 
+// MARK: Tap Handling
 
 extension CurveView {
 
@@ -152,10 +160,8 @@ extension CurveView {
             shouldVibrate = true
         }
 
-//        let segIndex = segmenetedControl.selectedSegmentIndex
         let pointIndex = currentItem.offset
         points[pointIndex] = CGPoint(x: currentItem.element.x, y: movedPosition)
-//        items[segIndex].points[pointIndex] = CGPoint(x: currentItem.element.x, y: movedPosition)
 
         delegate?.valueChanged(pointIndex: pointIndex, value: points[pointIndex])
     }
