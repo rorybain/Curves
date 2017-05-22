@@ -60,6 +60,9 @@ class ViewController: UIViewController {
 
     var segmenetedControl: UISegmentedControl!
 
+    var imageMovie: GPUImageMovie?
+    var writer: GPUImageMovieWriter?
+
     override func viewDidLoad() {
         super.viewDidLoad()
 
@@ -145,8 +148,11 @@ class ViewController: UIViewController {
 extension ViewController: UIImagePickerControllerDelegate, UINavigationControllerDelegate {
 
     func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [String : Any]) {
-        if let x = info[UIImagePickerControllerMediaURL] as? URL {
-            print(x)
+        if let videoURL = info[UIImagePickerControllerMediaURL] as? URL {
+            picker.dismiss(animated: true, completion: { [weak self] in
+                self?.processVideo(videoURL)
+            })
+
         }
 
         if let image = info[UIImagePickerControllerOriginalImage] as? UIImage {
@@ -155,7 +161,72 @@ extension ViewController: UIImagePickerControllerDelegate, UINavigationControlle
         picker.dismiss(animated: true, completion: nil)
     }
 
+    func processVideo(_ videoURL: URL) {
+        saveButton.isHidden = true
+        imageMovie?.removeTarget(rgbFilter)
+        imageMovie = nil
+        imageMovie = GPUImageMovie(url: videoURL)
+        imageMovie?.playAtActualSpeed = true
+        imageMovie?.shouldRepeat = true
+        imageMovie?.addTarget(rgbFilter)
+        rgbFilter.addTarget(imageView)
+        let path = NSHomeDirectory().appending("Documents/Movie.m4v")
+        //        unlink([path.utf8String])
+        do {
+            try FileManager.default.removeItem(atPath: path)
+        } catch let error {
+            print("failed to delete \(error)")
+        }
+
+
+        //        let url = URL(fileURLWithPath: path)
+        //        writer = GPUImageMovieWriter(movieURL: url, size: CGSize(width: 640, height: 480))
+        //        rgbFilter.addTarget(writer)
+        //        writer?.shouldPassthroughAudio = true
+        //        imageMovie?.audioEncodingTarget = writer
+        //        imageMovie?.enableSynchronizedEncoding(using: writer)
+
+        //        writer?.startRecording()
+        imageMovie?.startProcessing()
+
+        //        writer?.completionBlock = { [weak self] in
+        //            guard let `self` = self,
+        //                let writer = self.writer else { return }
+        //            self.rgbFilter.removeTarget(writer)
+        //            writer.finishRecording()
+        //
+        //            let alert = UIAlertController(title: "Finished recording", message: nil, preferredStyle: .alert)
+        //            let ok = UIAlertAction(title: "Ok", style: .default, handler: nil)
+        //            alert.addAction(ok)
+        //            self.present(alert, animated: true, completion: nil)
+        //        }
+
+        //        imageMovie?.addTarget(rgbFilter)
+        //        let path = NSHomeDirectory().appending("Documents/Movie.m4v")
+        //        //unlink(path)
+        //        let url = URL(fileURLWithPath: path)
+        //        let writer = GPUImageMovieWriter(movieURL: url, size: CGSize(width: 480, height: 640))
+        //        rgbFilter.addTarget(writer)
+        //        writer?.shouldPassthroughAudio = true
+        //        imageMovie?.audioEncodingTarget = writer
+        //        imageMovie?.enableSynchronizedEncoding(using: writer)
+        //        writer?.startRecording()
+        //        imageMovie?.startProcessing()
+        //        writer?.completionBlock = { [weak self] in
+        //            self?.rgbFilter.removeTarget(writer)
+        //            writer?.finishRecording()
+        //
+        //            let alert = UIAlertController(title: "Finished recording", message: nil, preferredStyle: .alert)
+        //            let ok = UIAlertAction(title: "Ok", style: .default, handler: nil)
+        //            alert.addAction(ok)
+        //            self?.present(alert, animated: true, completion: nil)
+        //        }
+
+    }
+
     func set(_ image: UIImage) {
+        imageMovie?.removeTarget(rgbFilter)
+        imageMovie = nil
         saveButton.isHidden = false
         items = [CurveViewModel.Curve.all, .red, .green, .blue].map({ CurveViewModel($0) })
         currentImage = image
@@ -168,11 +239,11 @@ extension ViewController: UIImagePickerControllerDelegate, UINavigationControlle
 }
 
 extension ViewController: CurveViewDelegate {
-
+    
     func valueChanged(pointIndex: Int, value: CGPoint) {
         let segIndex = segmenetedControl.selectedSegmentIndex
         items[segIndex].points[pointIndex] = value
         filterImage()
     }
-
+    
 }
