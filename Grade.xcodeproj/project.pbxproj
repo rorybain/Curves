@@ -16,7 +16,6 @@
 		E24A35F21ED1E5FF001A2720 /* CameraHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = E24A35F11ED1E5FF001A2720 /* CameraHandler.swift */; };
 		E24A35F41ED1E614001A2720 /* CurveViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = E24A35F31ED1E614001A2720 /* CurveViewModel.swift */; };
 		E24A35F61ED1E664001A2720 /* HapticManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = E24A35F51ED1E664001A2720 /* HapticManager.swift */; };
-		E24A35F81ED1E70F001A2720 /* test.JPG in Resources */ = {isa = PBXBuildFile; fileRef = E24A35F71ED1E70F001A2720 /* test.JPG */; };
 		E24A35FA1ED1EC26001A2720 /* UIEdgeInsets.swift in Sources */ = {isa = PBXBuildFile; fileRef = E24A35F91ED1EC26001A2720 /* UIEdgeInsets.swift */; };
 		F5E51BB51E1308FE9593C455 /* Pods_Grade.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 232AD73D115DA44ADC8091E2 /* Pods_Grade.framework */; };
 /* End PBXBuildFile section */
@@ -36,7 +35,6 @@
 		E24A35F11ED1E5FF001A2720 /* CameraHandler.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CameraHandler.swift; sourceTree = "<group>"; };
 		E24A35F31ED1E614001A2720 /* CurveViewModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CurveViewModel.swift; sourceTree = "<group>"; };
 		E24A35F51ED1E664001A2720 /* HapticManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HapticManager.swift; sourceTree = "<group>"; };
-		E24A35F71ED1E70F001A2720 /* test.JPG */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; name = test.JPG; path = ../../Desktop/test.JPG; sourceTree = "<group>"; };
 		E24A35F91ED1EC26001A2720 /* UIEdgeInsets.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UIEdgeInsets.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -82,7 +80,6 @@
 		E24A35DA1ED1E528001A2720 /* Grade */ = {
 			isa = PBXGroup;
 			children = (
-				E24A35F71ED1E70F001A2720 /* test.JPG */,
 				E24A35DB1ED1E528001A2720 /* AppDelegate.swift */,
 				E24A35DD1ED1E528001A2720 /* ViewController.swift */,
 				E24A35ED1ED1E5D0001A2720 /* CurveView.swift */,
@@ -170,7 +167,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				E24A35F81ED1E70F001A2720 /* test.JPG in Resources */,
 				E24A35E61ED1E528001A2720 /* LaunchScreen.storyboard in Resources */,
 				E24A35E31ED1E528001A2720 /* Assets.xcassets in Resources */,
 			);

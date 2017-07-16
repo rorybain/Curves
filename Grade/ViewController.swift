@@ -53,15 +53,43 @@ class ViewController: UIViewController {
         return label
     }()
 
-    var sourceImage = GPUImagePicture(image: UIImage(named: "test.JPG"))!
+    var sourceImage: GPUImagePicture?
     let rgbFilter = GPUImageToneCurveFilter()
 
     var items = [CurveViewModel.Curve.all, .red, .green, .blue].map({ CurveViewModel($0) })
 
     var segmenetedControl: UISegmentedControl!
 
-    var imageMovie: GPUImageMovie?
+    var movie: GPUImageMovie?
     var writer: GPUImageMovieWriter?
+    var timer: Timer?
+
+    fileprivate func setupCurveView() {
+        curveView.autoPinEdge(toSuperviewEdge: .leading, withInset: padding)
+        curveView.autoPinEdge(toSuperviewEdge: .trailing, withInset: padding)
+        curveView.autoSetDimension(.height, toSize: 250)
+        curveView.autoPinEdge(.bottom, to: .top, of: segmenetedControl, withOffset: -padding)
+    }
+
+    fileprivate func setupSaveButton() {
+        saveButton.autoPinEdge(toSuperviewEdge: .trailing, withInset: padding)
+        saveButton.autoPinEdge(.bottom, to: .top, of: curveView, withOffset: 0)
+        saveButton.autoSetDimension(.height, toSize: 60)
+    }
+
+    fileprivate func setupImageView() {
+        imageView.autoPinEdge(.bottom, to: .top, of: saveButton, withOffset: -padding)
+        imageView.autoPinEdge(toSuperviewEdge: .leading, withInset: padding)
+        imageView.autoPinEdge(toSuperviewEdge: .trailing, withInset: padding)
+        imageView.autoPinEdge(toSuperviewEdge: .top, withInset: padding + 20)
+    }
+
+    fileprivate func setupLabel() {
+        label.autoPinEdge(.leading, to: .leading, of: imageView)
+        label.autoPinEdge(.trailing, to: .trailing, of: imageView)
+        label.autoPinEdge(.top, to: .top, of: imageView)
+        label.autoPinEdge(.bottom, to: .bottom, of: imageView)
+    }
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -85,28 +113,19 @@ class ViewController: UIViewController {
 
         segmenetedControl.autoPinEdgesToSuperviewEdges(with: UIEdgeInsets(padding), excludingEdge: .top)
 
-        curveView.autoPinEdge(toSuperviewEdge: .leading, withInset: padding)
-        curveView.autoPinEdge(toSuperviewEdge: .trailing, withInset: padding)
-        curveView.autoSetDimension(.height, toSize: 250)
-        curveView.autoPinEdge(.bottom, to: .top, of: segmenetedControl, withOffset: -padding)
-
-        saveButton.autoPinEdge(toSuperviewEdge: .trailing, withInset: padding)
-        saveButton.autoPinEdge(.bottom, to: .top, of: curveView, withOffset: 0)
-        saveButton.autoSetDimension(.height, toSize: 60)
-
-        imageView.autoPinEdge(.bottom, to: .top, of: saveButton, withOffset: -padding)
-        imageView.autoPinEdge(toSuperviewEdge: .leading, withInset: padding)
-        imageView.autoPinEdge(toSuperviewEdge: .trailing, withInset: padding)
-        imageView.autoPinEdge(toSuperviewEdge: .top, withInset: padding + 20)
-
-        label.autoPinEdge(.leading, to: .leading, of: imageView)
-        label.autoPinEdge(.trailing, to: .trailing, of: imageView)
-        label.autoPinEdge(.top, to: .top, of: imageView)
-        label.autoPinEdge(.bottom, to: .bottom, of: imageView)
+        setupCurveView()
+        setupSaveButton()
+        setupImageView()
+        setupLabel()
 
         let tapGestureRecog = UITapGestureRecognizer(target: self, action: #selector(imagePressed))
         imageView.addGestureRecognizer(tapGestureRecog)
 
+    }
+
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        timer?.invalidate()
     }
 
     fileprivate func filterImage() {
@@ -114,7 +133,7 @@ class ViewController: UIViewController {
         rgbFilter.redControlPoints = items[1].points.map({ NSValue(cgPoint: $0) })
         rgbFilter.greenControlPoints = items[2].points.map({ NSValue(cgPoint: $0) })
         rgbFilter.blueControlPoints = items[3].points.map({ NSValue(cgPoint: $0) })
-        sourceImage.processImage()
+        sourceImage?.processImage()
     }
 
     func changedCurve() {
@@ -128,18 +147,81 @@ class ViewController: UIViewController {
     }
 
     func savePressed() {
-        guard let currentImage = currentImage,
-            let filteredImage = rgbFilter.image(byFilteringImage: currentImage) else { return }
+        if let currentImage = currentImage {
+            saveImage(currentImage)
+        } else if let movie = movie {
+            saveMovie(movie)
+        }
+    }
+
+    private func saveImage(_ currentImage: UIImage) {
+        guard let filteredImage = rgbFilter.image(byFilteringImage: currentImage) else { return }
         PHPhotoLibrary.shared().performChanges({
             PHAssetCreationRequest.creationRequestForAsset(from: filteredImage)
         }) { [weak self] (success, error) in
             if success {
-                let alert = UIAlertController(title: "Success", message: nil, preferredStyle: .alert)
-                alert.addAction(UIAlertAction(title: "Ok", style: .default, handler: nil))
-                self?.present(alert, animated: true, completion: nil)
+                self?.showFinishedSavingMessage()
             } else {
                 print("failed with \(String(describing: error))")
             }
+        }
+    }
+
+    private func saveMovie(_ movie: GPUImageMovie) {
+//        movie.cancelProcessing()
+        movie.shouldRepeat = false
+        movie.playAtActualSpeed = false
+
+        let docs = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
+        let url = docs.appendingPathComponent("Movie.m4v")
+        unlink(url.path)
+        print(url)
+
+        let asset = AVURLAsset(url: movie.url)
+        let assetTrack = asset.tracks(withMediaType: AVMediaTypeVideo).first
+        let size = assetTrack?.naturalSize ?? .zero
+        guard let writer = GPUImageMovieWriter(movieURL: url, size: size) else { fatalError("failed to create writer") }
+        self.writer = writer
+
+        rgbFilter.addTarget(writer)
+        writer.encodingLiveVideo = false
+        writer.shouldPassthroughAudio = false
+        writer.delegate = self
+//        movie.audioEncodingTarget = writer
+//        movie.enableSynchronizedEncoding(using: writer)
+        writer.startRecording()
+        movie.startProcessing()
+        timer = Timer.scheduledTimer(timeInterval: 0.3, target: self,
+                                     selector: #selector(updateProgress), userInfo: nil, repeats: true)
+
+        writer.completionBlock = { [ weak self] in
+            print("Success")
+            guard let writer = self?.writer else { fatalError("writer is nil!!") }
+            self?.rgbFilter.removeTarget(writer)
+            self?.timer?.invalidate()
+            writer.finishRecording()
+            self?.movie?.shouldRepeat = true
+            self?.showFinishedSavingMessage()
+        }
+
+        writer.failureBlock = { error in
+            print("ERROROROROROR")
+            print(error)
+        }
+
+    }
+
+    func updateProgress() {
+        print("progress is \(String(describing: movie?.progress))")
+    }
+
+    private func showFinishedSavingMessage() {
+        DispatchQueue.main.async { [weak self] in
+            self?.timer?.invalidate()
+            let alert = UIAlertController(title: "Finished recording", message: nil, preferredStyle: .alert)
+            let ok = UIAlertAction(title: "Ok", style: .default, handler: nil)
+            alert.addAction(ok)
+            self?.present(alert, animated: true, completion: nil)
         }
     }
 
@@ -162,75 +244,32 @@ extension ViewController: UIImagePickerControllerDelegate, UINavigationControlle
     }
 
     func processVideo(_ videoURL: URL) {
-        saveButton.isHidden = true
-        imageMovie?.removeTarget(rgbFilter)
-        imageMovie = nil
-        imageMovie = GPUImageMovie(url: videoURL)
-        imageMovie?.playAtActualSpeed = true
-        imageMovie?.shouldRepeat = true
-        imageMovie?.addTarget(rgbFilter)
+        saveButton.isHidden = false
+        movie?.removeTarget(rgbFilter)
+        sourceImage?.removeTarget(rgbFilter)
+        movie = nil
+
+        guard let movie = GPUImageMovie(url: videoURL) else { return }
+        self.movie = movie
+
+        movie.playAtActualSpeed = true
+        movie.shouldRepeat = true
+        movie.addTarget(rgbFilter)
         rgbFilter.addTarget(imageView)
-        let path = NSHomeDirectory().appending("Documents/Movie.m4v")
-        //        unlink([path.utf8String])
-        do {
-            try FileManager.default.removeItem(atPath: path)
-        } catch let error {
-            print("failed to delete \(error)")
-        }
-
-
-        //        let url = URL(fileURLWithPath: path)
-        //        writer = GPUImageMovieWriter(movieURL: url, size: CGSize(width: 640, height: 480))
-        //        rgbFilter.addTarget(writer)
-        //        writer?.shouldPassthroughAudio = true
-        //        imageMovie?.audioEncodingTarget = writer
-        //        imageMovie?.enableSynchronizedEncoding(using: writer)
-
-        //        writer?.startRecording()
-        imageMovie?.startProcessing()
-
-        //        writer?.completionBlock = { [weak self] in
-        //            guard let `self` = self,
-        //                let writer = self.writer else { return }
-        //            self.rgbFilter.removeTarget(writer)
-        //            writer.finishRecording()
-        //
-        //            let alert = UIAlertController(title: "Finished recording", message: nil, preferredStyle: .alert)
-        //            let ok = UIAlertAction(title: "Ok", style: .default, handler: nil)
-        //            alert.addAction(ok)
-        //            self.present(alert, animated: true, completion: nil)
-        //        }
-
-        //        imageMovie?.addTarget(rgbFilter)
-        //        let path = NSHomeDirectory().appending("Documents/Movie.m4v")
-        //        //unlink(path)
-        //        let url = URL(fileURLWithPath: path)
-        //        let writer = GPUImageMovieWriter(movieURL: url, size: CGSize(width: 480, height: 640))
-        //        rgbFilter.addTarget(writer)
-        //        writer?.shouldPassthroughAudio = true
-        //        imageMovie?.audioEncodingTarget = writer
-        //        imageMovie?.enableSynchronizedEncoding(using: writer)
-        //        writer?.startRecording()
-        //        imageMovie?.startProcessing()
-        //        writer?.completionBlock = { [weak self] in
-        //            self?.rgbFilter.removeTarget(writer)
-        //            writer?.finishRecording()
-        //
-        //            let alert = UIAlertController(title: "Finished recording", message: nil, preferredStyle: .alert)
-        //            let ok = UIAlertAction(title: "Ok", style: .default, handler: nil)
-        //            alert.addAction(ok)
-        //            self?.present(alert, animated: true, completion: nil)
-        //        }
-
+//        movie.startProcessing()
     }
 
     func set(_ image: UIImage) {
-        imageMovie?.removeTarget(rgbFilter)
-        imageMovie = nil
+        movie?.removeTarget(rgbFilter)
+        sourceImage?.removeTarget(rgbFilter)
+        movie = nil
+
         saveButton.isHidden = false
         items = [CurveViewModel.Curve.all, .red, .green, .blue].map({ CurveViewModel($0) })
         currentImage = image
         sourceImage = GPUImagePicture(image: image)
+        guard let sourceImage = sourceImage else { return }
+
         sourceImage.addTarget(rgbFilter)
         rgbFilter.addTarget(imageView)
         sourceImage.processImage()
@@ -239,11 +278,25 @@ extension ViewController: UIImagePickerControllerDelegate, UINavigationControlle
 }
 
 extension ViewController: CurveViewDelegate {
-    
+
     func valueChanged(pointIndex: Int, value: CGPoint) {
         let segIndex = segmenetedControl.selectedSegmentIndex
         items[segIndex].points[pointIndex] = value
         filterImage()
+    }
+
+}
+
+extension ViewController: GPUImageMovieWriterDelegate {
+    
+    func movieRecordingCompleted() {
+        writer?.finishRecording()
+        print("Movie recording completed")
+    }
+    
+    func movieRecordingFailedWithError(_ error: Error!) {
+        writer?.finishRecording()
+        print("movie recording failed")
     }
     
 }
