@@ -23,6 +23,7 @@ import PureLayout
 class ViewController: UIViewController {
 
     let padding: CGFloat = 16
+    var currentVideo = 0 // TODO remove me, for testing different video filters
 
     let curveView = CurveView()
 
@@ -55,12 +56,14 @@ class ViewController: UIViewController {
 
     var sourceImage: GPUImagePicture?
     let rgbFilter = GPUImageToneCurveFilter()
+    var exportFilter = GPUImageToneCurveFilter()
 
     var items = [CurveViewModel.Curve.all, .red, .green, .blue].map({ CurveViewModel($0) })
 
     var segmenetedControl: UISegmentedControl!
 
     var movie: GPUImageMovie?
+    var exportMovie: GPUImageMovie?
     var writer: GPUImageMovieWriter?
     var timer: Timer?
 
@@ -168,39 +171,57 @@ class ViewController: UIViewController {
     }
 
     private func saveMovie(_ movie: GPUImageMovie) {
-//        movie.cancelProcessing()
-        movie.shouldRepeat = false
-        movie.playAtActualSpeed = false
+
+        exportMovie?.removeAllTargets()
+//        rgbFilter.removeAllTargets()
+//        movie.removeAllTargets()
+        self.writer?.endProcessing()
+//        self.movie?.endProcessing()
+        self.exportMovie?.endProcessing()
+        self.exportMovie = nil
+        self.writer = nil
+
+        exportFilter = GPUImageToneCurveFilter() // if i don't make a new curve filter then video did end processing seems to not call
+        exportFilter.rgbCompositeControlPoints = rgbFilter.rgbCompositeControlPoints
+        exportFilter.redControlPoints = rgbFilter.redControlPoints
+        exportFilter.greenControlPoints = rgbFilter.greenControlPoints
+        exportFilter.blueControlPoints = rgbFilter.blueControlPoints
+
+        guard let exportMovie = GPUImageMovie(url: movie.url) else { return }
+        self.exportMovie = exportMovie
+        exportMovie.shouldRepeat = false
+        exportMovie.playAtActualSpeed = false
+        exportMovie.addTarget(exportFilter)
 
         let docs = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
-        let url = docs.appendingPathComponent("Movie.m4v")
+        let url = docs.appendingPathComponent("Movie\(currentVideo).m4v")
+        currentVideo += 1
         unlink(url.path)
         print(url)
 
-        let asset = AVURLAsset(url: movie.url)
+        let asset = AVURLAsset(url: exportMovie.url)
         let assetTrack = asset.tracks(withMediaType: AVMediaTypeVideo).first
         let size = assetTrack?.naturalSize ?? .zero
         guard let writer = GPUImageMovieWriter(movieURL: url, size: size) else { fatalError("failed to create writer") }
         self.writer = writer
 
-        rgbFilter.addTarget(writer)
+        exportFilter.addTarget(writer)
         writer.encodingLiveVideo = false
         writer.shouldPassthroughAudio = false
         writer.delegate = self
-//        movie.audioEncodingTarget = writer
-//        movie.enableSynchronizedEncoding(using: writer)
+        //        movie.audioEncodingTarget = writer
+        //        movie.enableSynchronizedEncoding(using: writer)
         writer.startRecording()
-        movie.startProcessing()
+        exportMovie.startProcessing()
         timer = Timer.scheduledTimer(timeInterval: 0.3, target: self,
                                      selector: #selector(updateProgress), userInfo: nil, repeats: true)
 
         writer.completionBlock = { [ weak self] in
             print("Success")
             guard let writer = self?.writer else { fatalError("writer is nil!!") }
-            self?.rgbFilter.removeTarget(writer)
-            self?.timer?.invalidate()
+//            self?.rgbFilter.removeTarget(writer)
+            self?.exportFilter.removeTarget(writer)
             writer.finishRecording()
-            self?.movie?.shouldRepeat = true
             self?.showFinishedSavingMessage()
         }
 
@@ -212,7 +233,7 @@ class ViewController: UIViewController {
     }
 
     func updateProgress() {
-        print("progress is \(String(describing: movie?.progress))")
+        print("progress is \(String(describing: exportMovie?.progress))")
     }
 
     private func showFinishedSavingMessage() {
@@ -256,7 +277,7 @@ extension ViewController: UIImagePickerControllerDelegate, UINavigationControlle
         movie.shouldRepeat = true
         movie.addTarget(rgbFilter)
         rgbFilter.addTarget(imageView)
-//        movie.startProcessing()
+        movie.startProcessing()
     }
 
     func set(_ image: UIImage) {
@@ -288,15 +309,15 @@ extension ViewController: CurveViewDelegate {
 }
 
 extension ViewController: GPUImageMovieWriterDelegate {
-    
+
     func movieRecordingCompleted() {
         writer?.finishRecording()
         print("Movie recording completed")
     }
-    
+
     func movieRecordingFailedWithError(_ error: Error!) {
         writer?.finishRecording()
         print("movie recording failed")
     }
-    
+
 }
