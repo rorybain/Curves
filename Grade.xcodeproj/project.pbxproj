@@ -7,14 +7,17 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		E223611F1F1FF00200634EEB /* PhotoFeedViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E223611E1F1FF00200634EEB /* PhotoFeedViewController.swift */; };
+		E22361211F1FF29800634EEB /* PhotoFeedCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = E22361201F1FF29800634EEB /* PhotoFeedCollectionViewCell.swift */; };
+		E22361231F1FF44D00634EEB /* UICollectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E22361221F1FF44D00634EEB /* UICollectionView.swift */; };
 		E24A35DC1ED1E528001A2720 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = E24A35DB1ED1E528001A2720 /* AppDelegate.swift */; };
-		E24A35DE1ED1E528001A2720 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E24A35DD1ED1E528001A2720 /* ViewController.swift */; };
+		E24A35DE1ED1E528001A2720 /* EditorViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E24A35DD1ED1E528001A2720 /* EditorViewController.swift */; };
 		E24A35E31ED1E528001A2720 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = E24A35E21ED1E528001A2720 /* Assets.xcassets */; };
 		E24A35E61ED1E528001A2720 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = E24A35E41ED1E528001A2720 /* LaunchScreen.storyboard */; };
 		E24A35EE1ED1E5D0001A2720 /* CurveView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E24A35ED1ED1E5D0001A2720 /* CurveView.swift */; };
 		E24A35F01ED1E5E7001A2720 /* UIBezierPath.swift in Sources */ = {isa = PBXBuildFile; fileRef = E24A35EF1ED1E5E7001A2720 /* UIBezierPath.swift */; };
 		E24A35F21ED1E5FF001A2720 /* CameraHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = E24A35F11ED1E5FF001A2720 /* CameraHandler.swift */; };
-		E24A35F41ED1E614001A2720 /* CurveViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = E24A35F31ED1E614001A2720 /* CurveViewModel.swift */; };
+		E24A35F41ED1E614001A2720 /* CurveDataItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = E24A35F31ED1E614001A2720 /* CurveDataItem.swift */; };
 		E24A35F61ED1E664001A2720 /* HapticManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = E24A35F51ED1E664001A2720 /* HapticManager.swift */; };
 		E24A35FA1ED1EC26001A2720 /* UIEdgeInsets.swift in Sources */ = {isa = PBXBuildFile; fileRef = E24A35F91ED1EC26001A2720 /* UIEdgeInsets.swift */; };
 		F5E51BB51E1308FE9593C455 /* Pods_Grade.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 232AD73D115DA44ADC8091E2 /* Pods_Grade.framework */; };
@@ -24,16 +27,19 @@
 		232AD73D115DA44ADC8091E2 /* Pods_Grade.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Grade.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		786B64ECCEB20004476DEA35 /* Pods-Grade.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Grade.debug.xcconfig"; path = "Pods/Target Support Files/Pods-Grade/Pods-Grade.debug.xcconfig"; sourceTree = "<group>"; };
 		98637355179A38289C9AD340 /* Pods-Grade.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Grade.release.xcconfig"; path = "Pods/Target Support Files/Pods-Grade/Pods-Grade.release.xcconfig"; sourceTree = "<group>"; };
+		E223611E1F1FF00200634EEB /* PhotoFeedViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoFeedViewController.swift; sourceTree = "<group>"; };
+		E22361201F1FF29800634EEB /* PhotoFeedCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoFeedCollectionViewCell.swift; sourceTree = "<group>"; };
+		E22361221F1FF44D00634EEB /* UICollectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UICollectionView.swift; sourceTree = "<group>"; };
 		E24A35D81ED1E528001A2720 /* Grade.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Grade.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		E24A35DB1ED1E528001A2720 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
-		E24A35DD1ED1E528001A2720 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
+		E24A35DD1ED1E528001A2720 /* EditorViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditorViewController.swift; sourceTree = "<group>"; };
 		E24A35E21ED1E528001A2720 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		E24A35E51ED1E528001A2720 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		E24A35E71ED1E528001A2720 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		E24A35ED1ED1E5D0001A2720 /* CurveView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CurveView.swift; sourceTree = "<group>"; };
 		E24A35EF1ED1E5E7001A2720 /* UIBezierPath.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UIBezierPath.swift; sourceTree = "<group>"; };
 		E24A35F11ED1E5FF001A2720 /* CameraHandler.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CameraHandler.swift; sourceTree = "<group>"; };
-		E24A35F31ED1E614001A2720 /* CurveViewModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CurveViewModel.swift; sourceTree = "<group>"; };
+		E24A35F31ED1E614001A2720 /* CurveDataItem.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CurveDataItem.swift; sourceTree = "<group>"; };
 		E24A35F51ED1E664001A2720 /* HapticManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HapticManager.swift; sourceTree = "<group>"; };
 		E24A35F91ED1EC26001A2720 /* UIEdgeInsets.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UIEdgeInsets.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -80,19 +86,78 @@
 		E24A35DA1ED1E528001A2720 /* Grade */ = {
 			isa = PBXGroup;
 			children = (
+				E25AE7141F268CEC004FCD92 /* Common */,
+				E25AE7131F268CD1004FCD92 /* Modules */,
 				E24A35DB1ED1E528001A2720 /* AppDelegate.swift */,
-				E24A35DD1ED1E528001A2720 /* ViewController.swift */,
-				E24A35ED1ED1E5D0001A2720 /* CurveView.swift */,
-				E24A35EF1ED1E5E7001A2720 /* UIBezierPath.swift */,
-				E24A35F11ED1E5FF001A2720 /* CameraHandler.swift */,
-				E24A35F31ED1E614001A2720 /* CurveViewModel.swift */,
-				E24A35F51ED1E664001A2720 /* HapticManager.swift */,
 				E24A35E71ED1E528001A2720 /* Info.plist */,
 				E24A35E21ED1E528001A2720 /* Assets.xcassets */,
 				E24A35E41ED1E528001A2720 /* LaunchScreen.storyboard */,
-				E24A35F91ED1EC26001A2720 /* UIEdgeInsets.swift */,
 			);
 			path = Grade;
+			sourceTree = "<group>";
+		};
+		E25AE7131F268CD1004FCD92 /* Modules */ = {
+			isa = PBXGroup;
+			children = (
+				E25AE71A1F268D6D004FCD92 /* PhotoFeed */,
+				E25AE7191F268D61004FCD92 /* Editor */,
+			);
+			path = Modules;
+			sourceTree = "<group>";
+		};
+		E25AE7141F268CEC004FCD92 /* Common */ = {
+			isa = PBXGroup;
+			children = (
+				E25AE7151F268CEC004FCD92 /* Extensions */,
+				E25AE7161F268CEC004FCD92 /* Utils */,
+				E25AE7171F268CEC004FCD92 /* Views */,
+			);
+			path = Common;
+			sourceTree = "<group>";
+		};
+		E25AE7151F268CEC004FCD92 /* Extensions */ = {
+			isa = PBXGroup;
+			children = (
+				E22361221F1FF44D00634EEB /* UICollectionView.swift */,
+				E24A35F91ED1EC26001A2720 /* UIEdgeInsets.swift */,
+				E24A35EF1ED1E5E7001A2720 /* UIBezierPath.swift */,
+				E24A35F11ED1E5FF001A2720 /* CameraHandler.swift */,
+			);
+			path = Extensions;
+			sourceTree = "<group>";
+		};
+		E25AE7161F268CEC004FCD92 /* Utils */ = {
+			isa = PBXGroup;
+			children = (
+				E24A35F51ED1E664001A2720 /* HapticManager.swift */,
+			);
+			path = Utils;
+			sourceTree = "<group>";
+		};
+		E25AE7171F268CEC004FCD92 /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				E24A35ED1ED1E5D0001A2720 /* CurveView.swift */,
+				E24A35F31ED1E614001A2720 /* CurveDataItem.swift */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
+		E25AE7191F268D61004FCD92 /* Editor */ = {
+			isa = PBXGroup;
+			children = (
+				E24A35DD1ED1E528001A2720 /* EditorViewController.swift */,
+			);
+			path = Editor;
+			sourceTree = "<group>";
+		};
+		E25AE71A1F268D6D004FCD92 /* PhotoFeed */ = {
+			isa = PBXGroup;
+			children = (
+				E223611E1F1FF00200634EEB /* PhotoFeedViewController.swift */,
+				E22361201F1FF29800634EEB /* PhotoFeedCollectionViewCell.swift */,
+			);
+			path = PhotoFeed;
 			sourceTree = "<group>";
 		};
 		F45456ACE8C54A8A6A53A414 /* Frameworks */ = {
@@ -241,11 +306,14 @@
 			buildActionMask = 2147483647;
 			files = (
 				E24A35EE1ED1E5D0001A2720 /* CurveView.swift in Sources */,
+				E223611F1F1FF00200634EEB /* PhotoFeedViewController.swift in Sources */,
 				E24A35F21ED1E5FF001A2720 /* CameraHandler.swift in Sources */,
 				E24A35F61ED1E664001A2720 /* HapticManager.swift in Sources */,
+				E22361231F1FF44D00634EEB /* UICollectionView.swift in Sources */,
 				E24A35F01ED1E5E7001A2720 /* UIBezierPath.swift in Sources */,
-				E24A35DE1ED1E528001A2720 /* ViewController.swift in Sources */,
-				E24A35F41ED1E614001A2720 /* CurveViewModel.swift in Sources */,
+				E22361211F1FF29800634EEB /* PhotoFeedCollectionViewCell.swift in Sources */,
+				E24A35DE1ED1E528001A2720 /* EditorViewController.swift in Sources */,
+				E24A35F41ED1E614001A2720 /* CurveDataItem.swift in Sources */,
 				E24A35FA1ED1EC26001A2720 /* UIEdgeInsets.swift in Sources */,
 				E24A35DC1ED1E528001A2720 /* AppDelegate.swift in Sources */,
 			);

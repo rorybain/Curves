@@ -9,7 +9,7 @@
 import Foundation
 import UIKit
 
-class CurveViewModel {
+class CurveDataItem {
 
     var curve: Curve
     var points: [CGPoint] = [

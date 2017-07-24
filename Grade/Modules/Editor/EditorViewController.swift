@@ -20,14 +20,14 @@ import GPUImage
 import Photos
 import PureLayout
 
-class ViewController: UIViewController {
+class EditorViewController: UIViewController {
 
     let padding: CGFloat = 16
-    var currentVideo = 0 // TODO remove me, for testing different video filters
 
     let curveView = CurveView()
 
     var currentImage: UIImage?
+    var selectedLivePhotoUrl: URL?
 
     let imageView: GPUImageView = {
         let imageView = GPUImageView()
@@ -58,7 +58,7 @@ class ViewController: UIViewController {
     let rgbFilter = GPUImageToneCurveFilter()
     var exportFilter = GPUImageToneCurveFilter()
 
-    var items = [CurveViewModel.Curve.all, .red, .green, .blue].map({ CurveViewModel($0) })
+    var items = [CurveDataItem.Curve.all, .red, .green, .blue].map({ CurveDataItem($0) })
 
     var segmenetedControl: UISegmentedControl!
 
@@ -124,6 +124,9 @@ class ViewController: UIViewController {
         let tapGestureRecog = UITapGestureRecognizer(target: self, action: #selector(imagePressed))
         imageView.addGestureRecognizer(tapGestureRecog)
 
+        if let selectedLivePhotoUrl = selectedLivePhotoUrl {
+            processVideo(selectedLivePhotoUrl)
+        }
     }
 
     override func viewWillDisappear(_ animated: Bool) {
@@ -194,8 +197,8 @@ class ViewController: UIViewController {
         exportMovie.addTarget(exportFilter)
 
         let docs = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
-        let url = docs.appendingPathComponent("Movie\(currentVideo).m4v")
-        currentVideo += 1
+        let url = docs.appendingPathComponent("Movie.m4v")
+
         unlink(url.path)
         print(url)
 
@@ -222,7 +225,7 @@ class ViewController: UIViewController {
 //            self?.rgbFilter.removeTarget(writer)
             self?.exportFilter.removeTarget(writer)
             writer.finishRecording()
-            self?.showFinishedSavingMessage()
+            self?.writeFileToCameraRoll(atURL: url)
         }
 
         writer.failureBlock = { error in
@@ -234,6 +237,18 @@ class ViewController: UIViewController {
 
     func updateProgress() {
         print("progress is \(String(describing: exportMovie?.progress))")
+    }
+
+    private func writeFileToCameraRoll(atURL url: URL) {
+        PHPhotoLibrary.shared().performChanges({
+            PHAssetCreationRequest.creationRequestForAssetFromVideo(atFileURL: url)
+        }) { [weak self] (success, error) in
+            if success {
+                self?.showFinishedSavingMessage()
+            } else {
+                print("failed with \(String(describing: error))")
+            }
+        }
     }
 
     private func showFinishedSavingMessage() {
@@ -248,7 +263,7 @@ class ViewController: UIViewController {
 
 }
 
-extension ViewController: UIImagePickerControllerDelegate, UINavigationControllerDelegate {
+extension EditorViewController: UIImagePickerControllerDelegate, UINavigationControllerDelegate {
 
     func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [String : Any]) {
         if let videoURL = info[UIImagePickerControllerMediaURL] as? URL {
@@ -273,6 +288,7 @@ extension ViewController: UIImagePickerControllerDelegate, UINavigationControlle
         guard let movie = GPUImageMovie(url: videoURL) else { return }
         self.movie = movie
 
+        items = [CurveDataItem.Curve.all, .red, .green, .blue].map({ CurveDataItem($0) })
         movie.playAtActualSpeed = true
         movie.shouldRepeat = true
         movie.addTarget(rgbFilter)
@@ -286,7 +302,7 @@ extension ViewController: UIImagePickerControllerDelegate, UINavigationControlle
         movie = nil
 
         saveButton.isHidden = false
-        items = [CurveViewModel.Curve.all, .red, .green, .blue].map({ CurveViewModel($0) })
+        items = [CurveDataItem.Curve.all, .red, .green, .blue].map({ CurveDataItem($0) })
         currentImage = image
         sourceImage = GPUImagePicture(image: image)
         guard let sourceImage = sourceImage else { return }
@@ -298,7 +314,7 @@ extension ViewController: UIImagePickerControllerDelegate, UINavigationControlle
 
 }
 
-extension ViewController: CurveViewDelegate {
+extension EditorViewController: CurveViewDelegate {
 
     func valueChanged(pointIndex: Int, value: CGPoint) {
         let segIndex = segmenetedControl.selectedSegmentIndex
@@ -308,7 +324,7 @@ extension ViewController: CurveViewDelegate {
 
 }
 
-extension ViewController: GPUImageMovieWriterDelegate {
+extension EditorViewController: GPUImageMovieWriterDelegate {
 
     func movieRecordingCompleted() {
         writer?.finishRecording()

@@ -63,7 +63,7 @@ class CurveView: UIView {
         super.init(coder: aDecoder)
     }
 
-    func setup(with item: CurveViewModel) {
+    func setup(with item: CurveDataItem) {
         self.lineColor = item.curve.colour()
         self.points = item.points
     }
