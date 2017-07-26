@@ -230,7 +230,7 @@ class EditorViewController: UIViewController {
 
         writer.failureBlock = { error in
             print("ERROROROROROR")
-            print(error)
+            print(error as Any)
         }
 
     }
