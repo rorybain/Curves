@@ -20,6 +20,10 @@
 		E24A35F41ED1E614001A2720 /* CurveDataItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = E24A35F31ED1E614001A2720 /* CurveDataItem.swift */; };
 		E24A35F61ED1E664001A2720 /* HapticManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = E24A35F51ED1E664001A2720 /* HapticManager.swift */; };
 		E24A35FA1ED1EC26001A2720 /* UIEdgeInsets.swift in Sources */ = {isa = PBXBuildFile; fileRef = E24A35F91ED1EC26001A2720 /* UIEdgeInsets.swift */; };
+		E292329A1F2E3B0E0019E053 /* PhotoFeedViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = E29232991F2E3B0E0019E053 /* PhotoFeedViewModel.swift */; };
+		E292329C1F2E3B630019E053 /* PhotoFeedModule.swift in Sources */ = {isa = PBXBuildFile; fileRef = E292329B1F2E3B630019E053 /* PhotoFeedModule.swift */; };
+		E292329E1F2E3CEE0019E053 /* VideoUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = E292329D1F2E3CEE0019E053 /* VideoUtils.swift */; };
+		E29232A01F2E40CA0019E053 /* PhotoFeedWireframe.swift in Sources */ = {isa = PBXBuildFile; fileRef = E292329F1F2E40CA0019E053 /* PhotoFeedWireframe.swift */; };
 		F5E51BB51E1308FE9593C455 /* Pods_Grade.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 232AD73D115DA44ADC8091E2 /* Pods_Grade.framework */; };
 /* End PBXBuildFile section */
 
@@ -42,6 +46,10 @@
 		E24A35F31ED1E614001A2720 /* CurveDataItem.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CurveDataItem.swift; sourceTree = "<group>"; };
 		E24A35F51ED1E664001A2720 /* HapticManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HapticManager.swift; sourceTree = "<group>"; };
 		E24A35F91ED1EC26001A2720 /* UIEdgeInsets.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UIEdgeInsets.swift; sourceTree = "<group>"; };
+		E29232991F2E3B0E0019E053 /* PhotoFeedViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoFeedViewModel.swift; sourceTree = "<group>"; };
+		E292329B1F2E3B630019E053 /* PhotoFeedModule.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoFeedModule.swift; sourceTree = "<group>"; };
+		E292329D1F2E3CEE0019E053 /* VideoUtils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoUtils.swift; sourceTree = "<group>"; };
+		E292329F1F2E40CA0019E053 /* PhotoFeedWireframe.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoFeedWireframe.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -130,6 +138,7 @@
 			isa = PBXGroup;
 			children = (
 				E24A35F51ED1E664001A2720 /* HapticManager.swift */,
+				E292329D1F2E3CEE0019E053 /* VideoUtils.swift */,
 			);
 			path = Utils;
 			sourceTree = "<group>";
@@ -154,8 +163,11 @@
 		E25AE71A1F268D6D004FCD92 /* PhotoFeed */ = {
 			isa = PBXGroup;
 			children = (
+				E292329B1F2E3B630019E053 /* PhotoFeedModule.swift */,
+				E29232991F2E3B0E0019E053 /* PhotoFeedViewModel.swift */,
 				E223611E1F1FF00200634EEB /* PhotoFeedViewController.swift */,
 				E22361201F1FF29800634EEB /* PhotoFeedCollectionViewCell.swift */,
+				E292329F1F2E40CA0019E053 /* PhotoFeedWireframe.swift */,
 			);
 			path = PhotoFeed;
 			sourceTree = "<group>";
@@ -306,7 +318,11 @@
 			buildActionMask = 2147483647;
 			files = (
 				E24A35EE1ED1E5D0001A2720 /* CurveView.swift in Sources */,
+				E292329E1F2E3CEE0019E053 /* VideoUtils.swift in Sources */,
+				E292329C1F2E3B630019E053 /* PhotoFeedModule.swift in Sources */,
+				E292329A1F2E3B0E0019E053 /* PhotoFeedViewModel.swift in Sources */,
 				E223611F1F1FF00200634EEB /* PhotoFeedViewController.swift in Sources */,
+				E29232A01F2E40CA0019E053 /* PhotoFeedWireframe.swift in Sources */,
 				E24A35F21ED1E5FF001A2720 /* CameraHandler.swift in Sources */,
 				E24A35F61ED1E664001A2720 /* HapticManager.swift in Sources */,
 				E22361231F1FF44D00634EEB /* UICollectionView.swift in Sources */,
